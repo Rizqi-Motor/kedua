@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tembak Cinta ❤️</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:linear-gradient(
+    -45deg,
+    #ff9a9e,
+    #fad0c4,
+    #ffdde1,
+    #fcb69f
+  );
+  background-size:400% 400%;
+  animation:gradientBG 12s ease infinite;
+  overflow:hidden;
+}
+
+@keyframes gradientBG{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+body::before,
+body::after{
+  content:"💖";
+  position:fixed;
+  font-size:180px;
+  opacity:0.08;
+  z-index:0;
+  animation:floatHeart 10s ease-in-out infinite;
+}
+
+body::before{
+  top:10%;
+  left:5%;
+}
+
+body::after{
+  bottom:10%;
+  right:5%;
+  animation-delay:5s;
+}
+
+@keyframes floatHeart{
+  0%,100%{
+    transform:translateY(0) rotate(0deg);
+  }
+  50%{
+    transform:translateY(-30px) rotate(10deg);
+  }
+}
+
+#app{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.hearts-bg{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.floating-heart{
+  position:absolute;
+  font-size:25px;
+  opacity:.2;
+  animation:floatUp linear infinite;
+}
+
+@keyframes floatUp{
+  from{
+    transform:translateY(120%);
+    opacity:.3;
+  }
+  to{
+    transform:translateY(-120%);
+    opacity:0;
+  }
+}
+
+#main-content{
+  background:rgba(255,255,255,0.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.3);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+  border-radius:25px;
+  padding:35px;
+  max-width:650px;
+  width:90%;
+  position:relative;
+  z-index:2;
+}
+
+.gun-emoji{
+  font-size:90px;
+  animation:shake 2s infinite;
+}
+
+@keyframes shake{
+  0%,100%{transform:rotate(-5deg);}
+  50%{transform:rotate(5deg);}
+}
+
+.title{
+  font-size:28px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.subtitle{
+  margin-top:10px;
+  color:#555;
+}
+
+.name-box{
+  margin-top:15px;
+  background:#ffe5e5;
+  padding:12px 20px;
+  border-radius:12px;
+  color:#d6336c;
+  font-weight:bold;
+  display:inline-block;
+}
+
+.question{
+  margin-top:18px;
+  font-size:22px;
+  font-weight:bold;
+}
+
+/* Modifikasi area tombol agar flexibel menampung tombol "Iya" yang membesar */
+.btn-row{
+  margin-top:25px;
+  position:relative;
+  min-height:160px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+}
+
+.btn-yes{
+  background:#ff4d6d;
+  color:white;
+  border:none;
+  padding:12px 36px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.2s ease;
+  box-shadow:0 5px 15px rgba(255,77,109,.4);
+  z-index: 10;
+}
+
+.btn-yes:hover{
+  transform:scale(1.05);
+}
+
+.btn-no{
+  position:absolute;
+  left: 55%; /* Posisi awal sedikit di kanan tombol iya */
+  top: 10px;
+  background:white;
+  border:1px solid #ccc;
+  padding:12px 28px;
+  border-radius:12px;
+  cursor:pointer;
+  transition: all 0.1s ease;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+#counter{
+  margin-top: auto;
+  padding-top: 20px;
+  color:#666;
+  font-weight:bold;
+}
+
+.boom-overlay{
+  display:none;
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,.95);
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:999;
+}
+
+.boom-emoji{
+  font-size:120px;
+}
+
+.boom-title{
+  font-size:34px;
+  margin-top:15px;
+  color:#d6336c;
+  font-weight:bold;
+}
+
+.boom-sub{
+  margin-top:10px;
+  color:#444;
+  font-size:18px;
+}
+
+.restart-btn{
+  margin-top:25px;
+  padding:12px 25px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#ff4d6d;
+  color:white;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div class="hearts-bg" id="hearts"></div>
+
+<div id="main-content">
+
+<div class="gun-emoji">🔫</div>
+
+<div class="title">
+Awas, ini bukan sembarang tembakan!
+</div>
+
+<div class="subtitle">
+Pistol ini sudah diisi dengan
+</div>
+
+<div class="name-box">
+💘 Peluru Cinta 💘
+</div>
+
+<div class="question">
+Mitha mau jadi pacar Iki nggak?
+</div>
+
+<div class="question">
+Hati-hati, sekali kena nggak bisa kabur!
+</div>
+
+<div class="btn-row" id="btn-area">
+
+<button class="btn-yes" onclick="boom()">
+💘 Iya Dong!
+</button>
+
+<button class="btn-no" id="btn-no">
+Nggak Mau 🏃
+</button>
+
+<div id="counter">
+Jumlah penolakan: 0
+</div>
+
+</div>
+</div>
+
+<div class="boom-overlay" id="boom-screen">
+
+<div class="boom-emoji">💥❤️‍🔥</div>
+
+<div class="boom-title">
+Dor! Kena deh!
+</div>
+
+<div class="boom-sub">
+Selamat, kamu resmi tertembak cinta ❤️
+</div>
+
+<div class="boom-sub">
+Sekarang kamu milikku dan nggak bisa kabur ke mana-mana 😈💕
+</div>
+
+<button class="restart-btn" onclick="restart()">
+🔄 Masih Mau Nolak?
+</button>
+
+</div>
+
+</div>
+
+<audio id="loveSound" autoplay loop>
+<source src="riskital.mp3.mpeg" type="audio/mpeg">
+</audio>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+<script>
+const noMessages = [
+"Nggak Mau 🏃",
+"Eh jangan kabur!",
+"Hei balik sini!",
+"Masih yakin nggak mau?",
+"Sayang banget lho~",
+"Ayo pikir lagi...",
+"Nggak mau rugi?",
+"Pelurunya udah siap nih!",
+"Kabur terus ya?",
+"OK fine... 🥺"
+];
+
+let noCount = 0;
+
+const noBtn = document.getElementById("btn-no");
+const yesBtn = document.querySelector(".btn-yes");
+const btnArea = document.getElementById("btn-area");
+
+function escapeButton(){
+
+  noCount++;
+
+  noBtn.textContent =
+  noMessages[Math.min(noCount, noMessages.length-1)];
+
+  document.getElementById("counter").innerText =
+  "Jumlah penolakan: " + noCount;
+
+  const area = btnArea.getBoundingClientRect();
+
+  // Kalkulasi batas maksimal koordinat X dan Y agar tombol tidak keluar container pembungkusnya
+  const maxX = area.width - noBtn.offsetWidth;
+  const maxY = area.height - noBtn.offsetHeight - 40; // dikurangi ruang untuk text counter
+
+  // Ambil posisi acak baru yang aman
+  let randomX = Math.random() * maxX;
+  let randomY = Math.random() * maxY;
+
+  // Pastikan posisi koordinat tidak minus
+  if (randomX < 0) randomX = 10;
+  if (randomY < 0) randomY = 10;
+
+  noBtn.style.left = randomX + "px";
+  noBtn.style.top = randomY + "px";
+
+  // Perbesar tombol "Iya Dong"
+  let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+  yesBtn.style.fontSize = (currentSize + 2) + "px";
+  yesBtn.style.padding = (12 + noCount) + "px " + (36 + noCount * 2) + "px";
+
+  if(noCount === 10){
+    alert("Udah 10 kali nolak tapi aku masih sayang ❤️");
+  }
+}
+
+// Menggunakan 'mouseover' untuk PC/Laptop dan 'touchstart' untuk HP agar responsif di semua perangkat
+noBtn.addEventListener("mouseover", escapeButton);
+noBtn.addEventListener("touchstart", function(e) {
+    e.preventDefault(); // Mencegah klik tidak sengaja pada mobile
+    escapeButton();
+});
+
+function boom(){
+  document.getElementById("boom-screen").style.display="flex";
+
+  try{
+    document.getElementById("loveSound").play();
+  }catch(e){}
+
+  confetti({
+    particleCount:300,
+    spread:180,
+    origin:{y:0.6}
+  });
+}
+
+function restart(){
+  noCount=0;
+
+  document.getElementById("counter").innerText =
+  "Jumlah penolakan: 0";
+
+  noBtn.textContent=noMessages[0];
+
+  // Kembalikan ke posisi semula
+  noBtn.style.left="55%";
+  noBtn.style.top="10px";
+
+  yesBtn.style.fontSize="16px";
+  yesBtn.style.padding="12px 36px";
+
+  document.getElementById("boom-screen").style.display="none";
+}
+
+// Efek background hati melayang otomatis
+(function(){
+  const bg=document.getElementById("hearts");
+  const emojis=["💕","💘","❤️","💖","💞","💗"];
+
+  for(let i=0;i<25;i++){
+    const heart=document.createElement("span");
+    heart.className="floating-heart";
+    heart.textContent=
+    emojis[Math.floor(Math.random()*emojis.length)];
+    heart.style.left=Math.random()*100+"%";
+    heart.style.animationDuration=
+    (4+Math.random()*6)+"s";
+    heart.style.animationDelay=
+    (-Math.random()*5)+"s";
+    bg.appendChild(heart);
+  }
+})();
+</script>
+
+</body>
+</html>
