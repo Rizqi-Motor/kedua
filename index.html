@@ -148,11 +148,11 @@ body::after{
   font-weight:bold;
 }
 
-/* Modifikasi area tombol agar flexibel menampung tombol "Iya" yang membesar */
+/* Mengubah container tombol menggunakan area relatif yang lebih besar & fleksibel */
 .btn-row{
   margin-top:25px;
   position:relative;
-  min-height:160px;
+  min-height:220px; /* Diperbesar agar pergerakan tombol tolak lebih leluasa */
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -169,6 +169,7 @@ body::after{
   font-size:16px;
   transition:.2s ease;
   box-shadow:0 5px 15px rgba(255,77,109,.4);
+  position: relative;
   z-index: 10;
 }
 
@@ -178,21 +179,21 @@ body::after{
 
 .btn-no{
   position:absolute;
-  left: 55%; /* Posisi awal sedikit di kanan tombol iya */
+  left: calc(50% + 80px); /* Posisi awal di sebelah kanan tombol iya */
   top: 10px;
   background:white;
   border:1px solid #ccc;
   padding:12px 28px;
   border-radius:12px;
   cursor:pointer;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
   z-index: 5;
   white-space: nowrap;
 }
 
 #counter{
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 25px;
   color:#666;
   font-weight:bold;
 }
@@ -345,24 +346,49 @@ function escapeButton(){
   document.getElementById("counter").innerText =
   "Jumlah penolakan: " + noCount;
 
+  // Dapatkan ukuran container utama
   const area = btnArea.getBoundingClientRect();
 
-  // Kalkulasi batas maksimal koordinat X dan Y agar tombol tidak keluar container pembungkusnya
+  // Dapatkan ukuran tombol "Iya Dong!" saat ini
+  const yesRect = yesBtn.getBoundingClientRect();
+  
+  // Hitung posisi relatif tombol "Iya Dong!" terhadap containernya
+  const yesLeftRel = yesRect.left - area.left;
+  const yesTopRel = yesRect.top - area.top;
+  const yesRightRel = yesLeftRel + yesRect.width;
+  const yesBottomRel = yesTopRel + yesRect.height;
+
   const maxX = area.width - noBtn.offsetWidth;
-  const maxY = area.height - noBtn.offsetHeight - 40; // dikurangi ruang untuk text counter
+  const maxY = area.height - noBtn.offsetHeight - 35; // Jarak aman untuk teks counter
 
-  // Ambil posisi acak baru yang aman
-  let randomX = Math.random() * maxX;
-  let randomY = Math.random() * maxY;
+  let randomX, randomY;
+  let isOverlapping = true;
+  let attempts = 0;
 
-  // Pastikan posisi koordinat tidak minus
-  if (randomX < 0) randomX = 10;
-  if (randomY < 0) randomY = 10;
+  // Lakukan perulangan acak sampai menemukan koordinat yang TIDAK bertabrakan dengan tombol "Iya Dong"
+  while (isOverlapping && attempts < 100) {
+    randomX = Math.random() * maxX;
+    randomY = Math.random() * maxY;
 
-  noBtn.style.left = randomX + "px";
-  noBtn.style.top = randomY + "px";
+    // Tentukan batas tombol "Nggak Mau" di koordinat baru ini
+    const noRight = randomX + noBtn.offsetWidth;
+    const noBottom = randomY + noBtn.offsetHeight;
 
-  // Perbesar tombol "Iya Dong"
+    // Cek apakah koordinat baru ini menimpa/masuk ke area tombol "Iya"
+    const overlapX = (randomX < yesRightRel + 15) && (noRight > yesLeftRel - 15);
+    const overlapY = (randomY < yesBottomRel + 15) && (noBottom > yesTopRel - 15);
+
+    if (!(overlapX && overlapY)) {
+      isOverlapping = false; // Koordinat aman ditemukan!
+    }
+    attempts++;
+  }
+
+  // Terapkan posisi baru yang aman
+  noBtn.style.left = Math.max(0, randomX) + "px";
+  noBtn.style.top = Math.max(0, randomY) + "px";
+
+  // Perbesar ukuran tombol "Iya Dong" secara bertahap
   let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
   yesBtn.style.fontSize = (currentSize + 2) + "px";
   yesBtn.style.padding = (12 + noCount) + "px " + (36 + noCount * 2) + "px";
@@ -372,10 +398,10 @@ function escapeButton(){
   }
 }
 
-// Menggunakan 'mouseover' untuk PC/Laptop dan 'touchstart' untuk HP agar responsif di semua perangkat
+// Event handler anti-gagal untuk PC (Mouse) dan Mobile (Sentuhan)
 noBtn.addEventListener("mouseover", escapeButton);
 noBtn.addEventListener("touchstart", function(e) {
-    e.preventDefault(); // Mencegah klik tidak sengaja pada mobile
+    e.preventDefault();
     escapeButton();
 });
 
@@ -401,9 +427,9 @@ function restart(){
 
   noBtn.textContent=noMessages[0];
 
-  // Kembalikan ke posisi semula
-  noBtn.style.left="55%";
-  noBtn.style.top="10px";
+  // Kembalikan ke posisi awal di sebelah kanan tombol iya
+  noBtn.style.left = "calc(50% + 80px)";
+  noBtn.style.top = "10px";
 
   yesBtn.style.fontSize="16px";
   yesBtn.style.padding="12px 36px";
@@ -411,7 +437,7 @@ function restart(){
   document.getElementById("boom-screen").style.display="none";
 }
 
-// Efek background hati melayang otomatis
+// Animasi background emoji hati
 (function(){
   const bg=document.getElementById("hearts");
   const emojis=["💕","💘","❤️","💖","💞","💗"];
